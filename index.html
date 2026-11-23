@@ -1,0 +1,375 @@
+<title>Convite Bruna e Luiggy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Cormorant+SC:wght@500;600&family=Pinyon+Script&display=swap">
+<style>
+/* Concept: a sealed pale-blue envelope on a soft sky. Tap: seal breaks, flap opens, the watercolor church interior rises, the invitation slides out and settles as the readable card. */
+:root {
+  --bg: #e4f0f8;
+  --bg-low: #f7f2e7;
+  --ink: #26384a;
+  --blue: #5a96bc;
+  --blue-line: #7fb2d1;
+  --blue-soft: #9cc6df;
+  --paper: #f8fafb;
+  --sand: #f4e5c8;
+  --font-script: 'Pinyon Script', 'Snell Roundhand', cursive;
+  --font-caps: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+  --font-text: 'Cormorant Garamond', Georgia, serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding-block: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-color: var(--bg);
+  background-image: linear-gradient(180deg, var(--bg) 0%, #eef5f9 55%, var(--bg-low) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum" 1;
+  overflow-x: hidden;
+}
+button { font: inherit; color: inherit; }
+
+.stage {
+  --W: min(calc(100vw - 40px), 480px, calc((100svh - 130px) / 1.2));
+  --Hb: calc(var(--W) * 0.64);
+  min-height: calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* ---------- intro text above the closed envelope ---------- */
+.intro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding-top: 28px;
+  transition: opacity .6s ease, transform .6s ease;
+}
+.intro .kicker { font-family: var(--font-caps); font-size: 15px; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; }
+.intro .names { font-family: var(--font-script); font-size: clamp(44px, 13.5vw, 84px); line-height: 1.15; color: var(--blue); white-space: nowrap; display: flex; align-items: baseline; justify-content: center; gap: .18em; }
+.intro .names i { font-style: normal; font-size: .62em; }
+.intro .date { font-family: var(--font-caps); font-size: 16px; letter-spacing: .22em; font-weight: 500; }
+.s1 .intro { opacity: 0; transform: translateY(-12px); }
+
+/* ---------- envelope ---------- */
+.env-wrap {
+  width: var(--W);
+  margin-bottom: 18px;
+  transition: opacity .8s ease, transform .8s ease;
+  position: relative;
+}
+.env-float { animation: floaty 5s ease-in-out infinite alternate; }
+.s1 .env-float { animation: none; }
+@keyframes floaty { from { transform: translateY(-4px); } to { transform: translateY(5px); } }
+
+.env {
+  display: block;
+  position: relative;
+  width: var(--W);
+  height: var(--Hb);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 6px;
+}
+.env:focus-visible { outline: 3px solid var(--ink); outline-offset: 8px; }
+.s1 .env { cursor: default; }
+
+.env .shadow {
+  position: absolute; left: 6%; width: 88%; bottom: -16px; height: 22px;
+  background: radial-gradient(ellipse at center, rgba(38,56,74,.28), rgba(38,56,74,0) 70%);
+  filter: blur(3px);
+}
+
+.clip {
+  display: block;
+  position: absolute; inset: 0;
+  perspective: 1400px;
+  clip-path: inset(-120% -20% 0 -20%);
+}
+.back {
+  position: absolute; inset: 0; z-index: 0;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(135deg, rgba(111,168,203,.14) 0 2px, transparent 2px 9px),
+    linear-gradient(#eef6fb, #d9eaf4);
+}
+.front {
+  position: absolute; inset: 0; z-index: 4;
+  clip-path: polygon(0 18%, 50% 58%, 100% 18%, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, #a9d0e6 0%, #8dbcd8 100%);
+  border-radius: 0 0 6px 6px;
+}
+.front svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.flap {
+  position: absolute; left: 0; top: 0; width: 100%; height: 58%;
+  z-index: 6;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transition: transform 1.15s cubic-bezier(.5, 0, .25, 1), z-index 0s linear .55s;
+}
+.s1 .flap { transform: rotateX(180deg); z-index: 1; }
+.flap .face {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 31%, 50% 100%, 0 31%);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flap .out { background: linear-gradient(175deg, #bcdcee 0%, #94c1dc 100%); }
+.flap .in { background: linear-gradient(#f1f8fc, #d4e6f1); transform: rotateX(180deg); }
+.flap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.seal {
+  position: absolute; left: 50%; top: 58%; z-index: 8;
+  width: calc(var(--W) * 0.17); height: calc(var(--W) * 0.17);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #a9d3ea 0%, #6fa8cb 55%, #4f88ad 100%);
+  box-shadow: 0 3px 8px rgba(38,56,74,.35), inset 0 1px 2px rgba(255,255,255,.55), inset 0 -2px 4px rgba(38,56,74,.25);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .55s cubic-bezier(.3, 1.6, .5, 1), opacity .45s ease;
+}
+.seal::before { content: ""; position: absolute; inset: 11%; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.7); }
+.seal b { font-family: var(--font-script); font-weight: 400; font-size: calc(var(--W) * 0.036); line-height: 1; white-space: nowrap; display: block; text-align: center; transform: translate(-0.2em, -0.06em); color: #fff; text-shadow: 0 1px 2px rgba(38,56,74,.4); }
+.s1 .seal { transform: translate(-50%, -50%) scale(1.45) rotate(10deg); opacity: 0; pointer-events: none; }
+
+/* ---------- church interior scene ---------- */
+.scene {
+  position: absolute; left: 50%; top: 0; z-index: 2;
+  width: calc(var(--W) * 0.9); height: calc(var(--W) * 0.9);
+  margin-left: calc(var(--W) * -0.45);
+  transform: translateY(calc(var(--W) * 1.4));
+  transition: transform 1.6s cubic-bezier(.22, .8, .25, 1);
+  filter: drop-shadow(0 6px 10px rgba(38,56,74,.22));
+}
+.s2 .scene { transform: translateY(calc(var(--W) * -0.56)); }
+
+/* ---------- invitation sliding out ---------- */
+.mini {
+  position: absolute; left: 50%; top: 0; z-index: 3;
+  width: calc(var(--W) * 0.78); height: calc(var(--W) * 1.12);
+  margin-left: calc(var(--W) * -0.39);
+  transform: translateY(calc(var(--W) * 0.7));
+  transition: transform 1.7s cubic-bezier(.3, .7, .2, 1);
+  background: var(--paper);
+  border: calc(var(--W) * 0.018) solid var(--blue-soft);
+  box-shadow: 0 -4px 18px rgba(38,56,74,.22);
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: calc(var(--W) * 0.07);
+  gap: calc(var(--W) * 0.03);
+}
+.s3 .mini { transform: translateY(calc(var(--W) * -0.2)); }
+.mini::before { content: ""; position: absolute; inset: calc(var(--W) * 0.012); border: 1.5px solid var(--blue-line); pointer-events: none; }
+.mini .lines { width: 58%; display: grid; gap: calc(var(--W) * 0.012); }
+.mini .lines i { display: block; height: 2px; background: rgba(38,56,74,.28); }
+.mini .lines i:nth-child(2) { width: 88%; margin: 0 auto; }
+.mini .lines i:nth-child(3) { width: 70%; margin: 0 auto; }
+.mini .nm { font-family: var(--font-script); font-size: calc(var(--W) * 0.085); line-height: 1.1; color: var(--blue); white-space: nowrap; }
+
+.hint {
+  min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-caps); font-size: 15px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600;
+  margin-bottom: max(4svh, 18px);
+  transition: opacity .4s ease;
+}
+.hint span { animation: pulse 2.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+.s1 .hint { opacity: 0; pointer-events: none; }
+
+.skip {
+  position: fixed; z-index: 20;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  min-height: 44px; padding: 0 16px;
+  background: rgba(248,250,251,.85); border: 1px solid var(--blue-line); border-radius: 22px;
+  font-family: var(--font-caps); font-size: 14px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600;
+  cursor: pointer; display: none;
+}
+.s1 .skip { display: block; }
+.s4 .skip, .s5 .skip { display: none; }
+
+.s4 .env-wrap { opacity: 0; transform: translateY(26px) scale(.94); pointer-events: none; }
+.s5 .env-wrap, .s5 .intro, .s5 .hint { display: none; }
+
+/* ---------- reading view ---------- */
+.reading { display: none; width: 100%; max-width: 540px; padding-block: 28px 40px; position: relative; z-index: 2; }
+.s5 .reading { display: block; animation: rise 1s cubic-bezier(.2, .8, .25, 1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(40px) scale(.97); } to { opacity: 1; transform: none; } }
+
+.card { background: var(--blue-soft); padding: 16px; box-shadow: 0 18px 40px -14px rgba(38,56,74,.4), 0 2px 6px rgba(38,56,74,.12); }
+.card .panel { background: var(--paper); padding: 10px; }
+.card .inner {
+  container-type: inline-size;
+  border: 2px solid var(--blue-line);
+  padding: 34px clamp(18px, 6vw, 44px) 36px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 26px;
+}
+.card .verse { font-family: var(--font-caps); font-size: clamp(13px, 3.6vw, 15px); line-height: 1.5; letter-spacing: .04em; font-weight: 500; max-width: 440px; }
+.card .verse small { font-size: .85em; }
+.card .names { font-family: var(--font-script); font-size: clamp(38px, 11vw, 60px); font-size: min(84px, 15cqw); line-height: 1.15; color: var(--blue); white-space: nowrap; display: flex; align-items: baseline; justify-content: center; gap: .16em; }
+.card .names i { font-style: normal; font-size: .62em; }
+.sprig { width: 150px; height: 22px; display: block; }
+.card .blessing { font-family: var(--font-caps); font-size: clamp(15px, 4.2vw, 17px); letter-spacing: .06em; font-weight: 500; }
+.card .parents { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; font-family: var(--font-caps); font-size: clamp(13px, 3.7vw, 15px); line-height: 1.55; letter-spacing: .03em; font-weight: 500; }
+.card .invite { font-family: var(--font-caps); font-size: clamp(15px, 4.2vw, 17px); line-height: 1.6; letter-spacing: .05em; font-weight: 500; }
+.when { display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--font-caps); }
+.when .dow { font-size: 15px; letter-spacing: .3em; text-transform: uppercase; font-weight: 600; }
+.when .day { font-family: var(--font-text); font-size: clamp(60px, 18vw, 88px); line-height: 1.1; padding-block: 6px; font-weight: 500; font-variant-numeric: lining-nums; font-feature-settings: "lnum" 1; color: var(--blue); }
+.when .my { font-size: 17px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
+.when .hr { font-size: 16px; letter-spacing: .14em; font-weight: 500; margin-top: 4px; }
+.card .place { font-family: var(--font-caps); font-size: clamp(15px, 4.2vw, 17px); line-height: 1.6; letter-spacing: .05em; font-weight: 500; }
+.card .place strong { font-weight: 600; }
+.card .after { font-family: var(--font-caps); font-size: clamp(14px, 3.9vw, 16px); letter-spacing: .05em; font-weight: 500; }
+
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+.actions a {
+  min-height: 48px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--ink); border-radius: 26px; color: var(--ink); text-decoration: none; background: rgba(248,250,251,.7);
+  font-family: var(--font-caps); font-size: 15px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+}
+.actions a:hover { background: var(--ink); color: var(--paper); }
+.actions a:focus-visible, .replay:focus-visible, .skip:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.replay { display: block; margin: 18px auto 0; min-height: 44px; padding: 0 14px; background: none; border: 0; cursor: pointer; font-family: var(--font-text); font-style: italic; font-size: 17px; text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- petals ---------- */
+.petals { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 1.5s ease; }
+.s5 .petals { opacity: 1; }
+.petal {
+  position: absolute; top: -40px; left: var(--x);
+  width: var(--s); height: calc(var(--s) * 1.5);
+  background: radial-gradient(ellipse at 30% 30%, #ffffff, #cfe6f3 75%);
+  border-radius: 80% 0 80% 0;
+  box-shadow: 0 0 4px rgba(111,168,203,.4);
+  animation: fall var(--d) linear var(--delay) infinite;
+}
+@keyframes fall {
+  0% { transform: translate(0, -40px) rotate(0deg); opacity: 0; }
+  10% { opacity: .9; }
+  100% { transform: translate(var(--drift), 108vh) rotate(560deg); opacity: .5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .env-float, .hint span, .petal { animation: none; }
+  .petals { display: none; }
+  .s5 .reading { animation: none; }
+  * { transition-duration: .01ms !important; transition-delay: 0s !important; }
+}
+</style>
+
+<div class="stage" id="stage">
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <header class="intro" id="intro">
+    <div class="kicker">Você está convidado</div>
+    <div class="names"><span>Bruna</span><i>&amp;</i><span>Luiggy</span></div>
+    <div class="date">19 · 12 · 2026</div>
+  </header>
+
+  <div class="env-wrap" id="envWrap">
+    <div class="env-float">
+      <button class="env" id="env" type="button" aria-label="Abrir o convite de casamento de Bruna e Luiggy">
+        <span class="shadow"></span>
+        <span class="clip">
+          <span class="back"></span>
+
+          <svg class="scene" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
+            <defs>
+              <clipPath id="house"><path d="M20 400V150L200 10L380 150V400Z"/></clipPath>
+              <clipPath id="win"><path d="M64 336V204L200 104L336 204V336Z"/></clipPath>
+              <radialGradient id="glass" cx="50%" cy="48%" r="62%">
+                <stop offset="0" stop-color="#f4fbfd"/><stop offset=".55" stop-color="#bfe6f0"/><stop offset="1" stop-color="#86c8dc"/>
+              </radialGradient>
+              <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f6e9cf"/><stop offset="1" stop-color="#f1dfbd"/>
+              </linearGradient>
+              <pattern id="mosaic" width="14" height="14" patternUnits="userSpaceOnUse">
+                <rect width="14" height="14" fill="#a6d9e6"/>
+                <rect width="7" height="7" fill="#c3e8f0"/>
+                <rect x="7" y="7" width="7" height="7" fill="#b9d9ee"/>
+                <rect x="7" width="7" height="7" fill="#d6c9ee" opacity=".55"/>
+              </pattern>
+              <polygon id="ray" points="200,236 187,70 213,70"/>
+              <g id="fig">
+                <circle cx="0" cy="-22" r="7" fill="#f4d57e"/>
+                <circle cx="0" cy="-22" r="4.2" fill="#edcfa6"/>
+                <path d="M-8 0L-6.5 -15Q0 -18 6.5 -15L8 0Z" fill="currentColor"/>
+              </g>
+              <g id="strip">
+                <rect x="0" y="-34" width="172" height="34" fill="url(#mosaic)"/>
+                <use href="#fig" x="16" color="#7fbf6e"/>
+                <use href="#fig" x="44" color="#d9504f"/>
+                <use href="#fig" x="72" color="#58b04f"/>
+                <use href="#fig" x="100" color="#5b78c9"/>
+                <use href="#fig" x="128" color="#8e7ad1"/>
+                <use href="#fig" x="156" color="#e8963a"/>
+              </g>
+            </defs>
+            <g clip-path="url(#house)">
+              <rect x="0" y="0" width="400" height="400" fill="url(#wall)"/>
+              <circle cx="60" cy="250" r="46" fill="#cfe6ef" opacity=".35"/>
+              <circle cx="350" cy="260" r="40" fill="#cfe6ef" opacity=".3"/>
+              <use href="#strip" transform="translate(30 206) rotate(-38)"/>
+              <use href="#strip" transform="translate(370 206) scale(-1 1) rotate(-38)"/>
+              <path d="M0 160L200 4L400 160V196L200 62L0 196Z" fill="#e4c590"/>
+              <path d="M0 172L200 17L400 172M0 184L200 31L400 184" stroke="#c9a46d" stroke-width="1" fill="none" opacity=".7"/>
+              <path d="M194 4h12v66h-12z" fill="#d6b078"/>
+              <path d="M58 340V201L200 98L342 201V340Z" fill="#8aa0ad"/>
+              <g clip-path="url(#win)">
+                <rect x="60" y="96" width="280" height="250" fill="url(#glass)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(45 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(90 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(135 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(180 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(225 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(270 200 236)"/>
+                <use href="#ray" fill="#e8f6fa" opacity=".7" transform="rotate(315 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(22.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(67.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(112.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(157.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(202.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(247.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(292.5 200 236)"/>
+                <use href="#ray" fill="#7fc4da" opacity=".35" transform="rotate(337.5 200 236)"/>
+                <circle cx="200" cy="236" r="74" fill="none" stroke="#f1cf6b" stroke-width="3" opacity=".8"/>
+                <circle cx="200" cy="236" r="112" fill="none" stroke="#f1cf6b" stroke-width="2" opacity=".6"/>
+                <circle cx="96" cy="300" r="22" fill="#7fc4da" opacity=".3"/>
+                <circle cx="300" cy="150" r="18" fill="#7fc4da" opacity=".25"/>
+                <circle cx="310" cy="300" r="26" fill="#9bd1a8" opacity=".25"/>
+                <path d="M150 112V336M250 112V336M64 262H336" stroke="#51697a" stroke-width="3" fill="none"/>
+              </g>
+              <path d="M64 336V204L200 104L336 204V336Z" fill="none" stroke="#51697a" stroke-width="3"/>
+
+              <circle cx="200" cy="186" r="30" fill="#f6dc86" stroke="#e6bd52" stroke-width="2"/>
+              <rect x="168" y="254" width="64" height="9" rx="2" fill="#cdb68e"/>
+              <path d="M178 258Q176 214 190 202H210Q224 214 222 258Z" fill="#e9b84b"/>
+              <path d="M193 204L200 258L207 204Z" fill="#fbf4df"/>
+              <circle cx="200" cy="186" r="10" fill="#efd2ae"/>
+              <circle cx="182" cy="214" r="4" fill="#efd2ae"/>
+              <rect x="207" y="224" width="18" height="14" rx="1" fill="#fff" stroke="#b44a4a" stroke-width="1.5"/>
+
+              <rect x="196" y="266" width="8" height="58" fill="#34414c"/>
+              <rect x="184" y="276" width="32" height="7" fill="#34414c"/>
+              <circle cx="200" cy="279" r="4" fill="#efd8bf"/>
+              <rect x="197" y="283" width="6" height="20" rx="3" fill="#f1e3d1"/>
+
+              <rect x="20" y="372" width="360" height="28" fill="#f6ead3"/>
+              <rect x="24" y="340" width="52" height="10" fill="#cf9560"/
